@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans 
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context 
+        http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <context:component-scan base-package="ua.rd.pizzaservice.services"/>
+    <context:component-scan base-package="ua.rd.pizzaservice.repository"/>
+
+
+    <bean name="orderService" class="ua.rd.pizzaservice.services.StateValidationOrderService"
+          factory-method="newInstance">
+        <constructor-arg>
+            <bean class="ua.rd.pizzaservice.services.SimpleOrderService"/>
+        </constructor-arg>
+        <constructor-arg ref="orderRepository"/>
+    </bean>
+
+    <bean class="ua.rd.pizzaservice.infrastructure.BenchmarkBeanPostProcessor"/>
+
+
+    <bean name="maxPizzaPriceDiscount" class="ua.rd.pizzaservice.domain.MaxPizzaPriceDiscount">
+        <constructor-arg value="4"/>
+        <constructor-arg value="0.3"/>
+    </bean>
+
+    <!-- define list of discounts -->
+    <bean name="availableDiscounts" class="java.util.ArrayList">
+        <constructor-arg>
+            <ref bean="maxPizzaPriceDiscount"/>
+        </constructor-arg>
+    </bean>
+
+    <bean name="maxPizzaCount" class="java.lang.Integer">
+        <constructor-arg value="10"/>
+    </bean>
+
+    <bean name="pizzaRepository"
+          class="ua.rd.pizzaservice.repository.InMemPizzaRepository"
+          init-method="init"/>
+
+    <bean name="orderRepository" class="ua.rd.pizzaservice.repository.InMemOrderRepository"/>
+
+</beans>
